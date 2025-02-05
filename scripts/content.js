@@ -1,16 +1,4 @@
-// Copyright 2022 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 
 function waitForElm(selector) {
   return new Promise(resolve => {
@@ -36,7 +24,6 @@ function waitForElm(selector) {
 
 
 const article = document.querySelector('article');
-
 // `document.querySelector` may return null if the selector doesn't match anything.
 if (article) {
     console.log("This is a popup1!")
@@ -72,7 +59,7 @@ if (article) {
 }
 
 
-console.log("This is a popup-0")
+console.log("This is a popup-00")
 const currentUrl = window.location.href;
 console.log(currentUrl);
 
@@ -82,36 +69,37 @@ console.log(currentUrl);
 
 
 console.log('The extension works');
-// ... logic that does not need DOM
 
-function run() {
-  console.log('The DOM is loaded');
 
-  // ... logic that needs DOM
+
+waitForElm('#content').then((elm) => {
+  // console.log('*** Element is ready');
+  // console.log(elm.textContent);
+
   const courseref = document.querySelector('body');
   if (courseref) {
     console.log("This is a popup4!")
     const text = courseref.textContent;
     // console.log(text)
   
+    var num_changeblock  = document.getElementsByClassName('diffchangeblock').length;
+    var num_added  = document.getElementsByClassName('diffadded').length;
+    var num_deleted  = document.getElementsByClassName('diffdeleted').length;
+    var num_contenterror  = document.getElementsByClassName('structuredcontenterror').length;
+    console.log(num_changeblock)
+
     const badge = document.createElement('p');
     // Use the same styling as the publish information in an article's header
-    badge.textContent = `⏱️ 34 min 4 read`;
-    courseref.insertAdjacentElement('afterend', badge);
+    badge.textContent = `⏱️ num_changeblock ${num_changeblock} num_added ${num_added} num_deleted ${num_deleted} num_contenterror ${num_contenterror}`;
+    courseref.insertAdjacentElement('afterbegin', badge);
 
-    iframe_ref = document.getElementById('bodycontentframe1');
-    if( iframe_ref) {
-      console.log("iframe_ref.src")
-      console.log(iframe_ref.src)
-    }
+
+
+    // iframe_ref = document.getElementById('bodycontentframe1');
+    // if( iframe_ref) {
+    //  console.log("iframe_ref.src")
+      // console.log(iframe_ref.src)
+    // }
   }
 
-}
-
-document.addEventListener("DOMContentLoaded", run);
-console.log('The extension works2');
-
-waitForElm('#content').then((elm) => {
-   console.log('*** Element is ready');
-  console.log(elm.textContent);
  });

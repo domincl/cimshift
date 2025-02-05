@@ -1,0 +1,25 @@
+
+h3 {
+    margin: auto;
+    background-color: rgb(36, 174, 21) !important;
+  }
+  
+  
+  .cimcontentframe {
+    background-color: rgb(235, 85, 59) !important;
+    height:500px ;
+    border: 1px solid black;
+  
+    resize: both !important;
+    overflow: auto !important;
+  /*
+    min-height: 500px;
+    min-width: 200px;
+    resize: both !important;
+    overflow: auto !important;
+    max-height: fit-content !important;
+    max-width: fit-content !important;
+  */
+  
+  }
+  

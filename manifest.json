@@ -13,11 +13,9 @@
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
+      "css": ["cimshift.css"],
       "all_frames": true,
-      "run_at": "document_start",
       "matches": [
-        "https://developer.chrome.com/docs/extensions/*",
-        "https://developer.chrome.com/docs/webstore/*",
         "https://nextbulletin.temple.edu/programadmin/*", 
         "https://nextbulletin.temple.edu/courseleaf/*"
       ]

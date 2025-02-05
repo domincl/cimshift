@@ -12,6 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function waitForElm(selector) {
+  return new Promise(resolve => {
+      if (document.querySelector(selector)) {
+          return resolve(document.querySelector(selector));
+      }
+
+      const observer = new MutationObserver(mutations => {
+          if (document.querySelector(selector)) {
+              observer.disconnect();
+              resolve(document.querySelector(selector));
+          }
+      });
+
+      // If you get "parameter 1 is not of type 'Node'" error, see https://stackoverflow.com/a/77855838/492336
+      observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true
+      });
+  });
+}
+
+
+
 const article = document.querySelector('article');
 
 // `document.querySelector` may return null if the selector doesn't match anything.
@@ -49,14 +72,46 @@ if (article) {
 }
 
 
-console.log("This is a popup-3!")
-const courseref = document.querySelector('#cimsubmitdate');
-if (courseref) {
-  console.log("This is a popup3!")
+console.log("This is a popup-0")
+const currentUrl = window.location.href;
+console.log(currentUrl);
 
-  const badge = document.createElement('p');
-  // Use the same styling as the publish information in an article's header
-  badge.textContent = `⏱️ 34 min 4 read`;
-  courseref.insertAdjacentElement('afterend', badge);
+// diffchangeblock
+
+
+
+
+console.log('The extension works');
+// ... logic that does not need DOM
+
+function run() {
+  console.log('The DOM is loaded');
+
+  // ... logic that needs DOM
+  const courseref = document.querySelector('body');
+  if (courseref) {
+    console.log("This is a popup4!")
+    const text = courseref.textContent;
+    // console.log(text)
+  
+    const badge = document.createElement('p');
+    // Use the same styling as the publish information in an article's header
+    badge.textContent = `⏱️ 34 min 4 read`;
+    courseref.insertAdjacentElement('afterend', badge);
+
+    iframe_ref = document.getElementById('bodycontentframe1');
+    if( iframe_ref) {
+      console.log("iframe_ref.src")
+      console.log(iframe_ref.src)
+    }
+  }
+
 }
 
+document.addEventListener("DOMContentLoaded", run);
+console.log('The extension works2');
+
+waitForElm('#content').then((elm) => {
+   console.log('*** Element is ready');
+  console.log(elm.textContent);
+ });

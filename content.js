@@ -81,21 +81,14 @@ function predifinedSearch2() {
 
 const predefined_searches = {
   "Predefined Searches...": "",
-  "ST CIS BA/BS": "ST-CSCI-BS, ST-CSCI-BA, ST-CYBR-BS, ST-IST-BS, ST-IST-BA, ST-DTSC-BS",
-  "ST-M*-BS": "ST-M*-BS",
-  "ST CIS ALL": "ST-CSCI-*, ST-CYBR-*, ST-IST-*, ST-IST-*, ST-DTSC-*",
+  "ST CIS BS": "ST-CSCI-BS, ST-CYBR-BS, ST-IST-BS, ST-DTSC-BS",
+  "ST CIS BA": "ST-CSCI-BA, ST-IST-BA, ST-DTSC-BA",
+  "ST CIS MINOR": "ST-CSCI-MINOR, ST-IST-MINOR, ST-DSCA-MINOR",
+  "ST CIS CERTIF": "ST-CSDF-CERTIF, ST-FPRG-CERTIF, ST-MAPD-CERTIF",
+  "ST CIS all UG ": "ST-CSCI-B*, ST-CSCI-MINOR, ST-CYBR-B*, ST-IST-B*, ST-IST-MINOR, ST-DTSC-BS, ST-DSCA-*, ST-CSDF-CERTIF, ST-FPRG-CERTIF, ST-MAPD-CERTIF",
 }
 
-function predifinedSearch() {
-  const x = `
-    <select id="moreinfoPredifnedSearch" tabindex="0" ">
-        <option value="">Predefined Searches...</option>
-        <option value="ST-M*-BS">ST-M*-BS</option>
-        <option value="ST-C*-BS">ST-C*-BS</option>
-        <option value="ST-C*-BA">ST-C*-BA</option>
-    </select>`
-  return x
-}
+
 
 waitForElm('#content').then((elm) => {
   // console.log('*** Element is ready');

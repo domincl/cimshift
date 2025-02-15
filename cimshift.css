@@ -1,69 +1,36 @@
-h4 {
-  //  margin: auto;
-  // background-color: rgb(36, 174, 21) !important;
-}
-
-
-
-.datatable {}
-
-.datatable th {
+.moreinfotable th {
   text-align: center;
   font-weight: bold;
   color: #9c1c33;
   background-color: #efe1c6;
-  padding: 5px 20px;
+  padding: 3px 3px !important;
   border: solid 1px #efe1c6;
 }
 
-.datatable td {
-  padding: 5px;
+.moreinfotable td {
+  padding: 3px !important;
   border: solid 1px #efe1c6;
 }
 
-.datatable td.cell1 {
+/*
+.moreinfotable td.cell1 {
   font-weight: bold;
   color: #9c1c33;
   background-color: #efe1c6;
-  padding: 10px;
+  padding: 3px;
   border: solid 1px #efe1c6;
   vertical-align: center;
 }
+*/
 
-.cimcontentframe {
-  background-color: rgb(59, 235, 182) !important;
-  height: 2000px;
-  border: 3px solid black;
-
-  resize: both !important;
-  overflow: auto !important;
-  /*
-    min-height: 500px;
-    min-width: 200px;
-    resize: both !important;
-    overflow: auto !important;
-    max-height: fit-content !important;
-    max-width: fit-content !important;
-  */
-
+.moreinfotable caption {
+  font-size: 12px;
+  text-align: right;
+  position: static;
+  caption-side: bottom;
 }
 
-.grid7 {
-  width: 540px;
-}
 
-.cim2 {
-  background-color: rgb(59, 235, 182) !important;
-
-
-}
-
-.addinfobox {
-  //background-color: rgb(235, 85, 59) !important;
-  background: #f2eee8 ! important;
-  height: 500px;
-  border: 1px solid black;
-
-  resize: both !important;
-  overflow: auto !important;
+.moreinfogrid {
+  width: 380px;
 }

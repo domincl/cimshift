@@ -3,7 +3,6 @@
   "name": "CimShift",
   "version": "1.0",
   "description": "UI tweaks in cim",
-
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -12,11 +11,15 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/content.js"],
-      "css": ["cimshift.css"],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "cimshift.css"
+      ],
       "all_frames": true,
       "matches": [
-        "https://nextbulletin.temple.edu/programadmin/*", 
+        "https://nextbulletin.temple.edu/programadmin/*",
         "https://nextbulletin.temple.edu/courseleaf/*"
       ]
     }

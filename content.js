@@ -54,6 +54,49 @@ function summaryOfChanges() {
   return summary_hmtl;
 }
 
+
+function predefinedChanged() {
+  console.log("This is a popup1=226!")
+}
+
+
+
+function predifinedSearch2() {
+  const x = `
+<div id="id">
+    <label for="moreinfoPredifnedSearch" class="hide">Predefined Searches</label>
+    <select id="moreinfoPredifnedSearch" tabindex="0" ">
+        <option value="">Predefined Searches...</option>
+        <option value="ST-M*-BS">ST-M*-BS</option>
+        <option value="ST-C*-BS">ST-C*-BS</option>
+        <option value="ST-C*-BA">ST-C*-BA</option>
+    </select>
+</div>  
+`
+  return x
+}
+
+
+
+
+const predefined_searches = {
+  "Predefined Searches...": "",
+  "ST CIS BA/BS": "ST-CSCI-BS, ST-CSCI-BA, ST-CYBR-BS, ST-IST-BS, ST-IST-BA, ST-DTSC-BS",
+  "ST-M*-BS": "ST-M*-BS",
+  "ST CIS ALL": "ST-CSCI-*, ST-CYBR-*, ST-IST-*, ST-IST-*, ST-DTSC-*",
+}
+
+function predifinedSearch() {
+  const x = `
+    <select id="moreinfoPredifnedSearch" tabindex="0" ">
+        <option value="">Predefined Searches...</option>
+        <option value="ST-M*-BS">ST-M*-BS</option>
+        <option value="ST-C*-BS">ST-C*-BS</option>
+        <option value="ST-C*-BA">ST-C*-BA</option>
+    </select>`
+  return x
+}
+
 waitForElm('#content').then((elm) => {
   // console.log('*** Element is ready');
   // console.log(elm.textContent);
@@ -64,7 +107,7 @@ waitForElm('#content').then((elm) => {
   if (h3_title) {
     console.log("This is a popup13!")
     if (h3_title.innerText === "Summary of Requirements for the Degree") {
-      console.log("This is a popup1=14!")
+
 
       const summary_div = document.createElement('div');
       summary_div.className = "moreinfogrid";
@@ -88,6 +131,54 @@ waitForElm('#content').then((elm) => {
       content_div.insertAdjacentElement('afterbegin', summary_div);
     }
   }
+  console.log("This is a popup1=14!")
+  const topaction = document.querySelector('#topactions');
+  console.log("This is a popup1=15!")
+  if (topaction) {
+    console.log("This is a popup1=16!")
 
+    const predefined_select = document.createElement('select');
+    predefined_select.id = "moreinfoPredifnedSearch"
+    console.log("This is a popup1=17!")
+    for (var key in predefined_searches) {
+      console.log("This is a popup1=19!")
+      const option = document.createElement('option');
+      option.value = key;
+      option.innerText = key;
+      predefined_select.insertAdjacentElement('beforeend', option);
+    }
+
+    //predefined_div.innerHTML = predifinedSearch();
+    const div = document.createElement('div');
+    div.insertAdjacentElement('beforeend', predefined_select);
+    topaction.insertAdjacentElement('beforeend', div);
+
+    const myElement = document.querySelector('#moreinfoPredifnedSearch');
+    console.log("This is a popup1=16!")
+    if (myElement) {
+      myElement.addEventListener('change', (event) => {
+        //Write the definition of your function
+        //It will be executed when change event will be fired
+        console.log("This is a popup1=1161!")
+
+        const search_field = document.querySelector('#search_field');
+        const search_button = document.querySelector('#search_button');
+
+        if (search_field && search_form) {
+
+          console.log(event.target.value)
+          const search_text = predefined_searches[event.target.value];
+          search_field.value = search_text;
+          search_button.click()
+        }
+
+
+      });
+
+
+    }
+
+
+  }
 
 });

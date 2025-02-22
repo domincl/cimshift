@@ -1,0 +1,769 @@
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"><head>
+
+<style>
+	.diffadded,
+	.diffdeleted,
+	ins,
+	del {
+		color: inherit;
+		text-decoration: inherit;
+		text-decoration-style: inherit;
+	}
+	
+	.diffdeleted {
+		display: none;
+	}
+	
+	body.showChanges .diffadded,
+	body.showChanges .diffadded a {
+		color: #007500 !important;
+		text-decoration: underline !important;
+		text-decoration-style: double !important;
+		-webkit-text-decoration-skip: none;		/* Safari */
+		text-decoration-skip-ink: none;			/* Edge Chromium */
+	}
+		
+	body.showChanges .diffdeleted,
+	body.showChanges .diffdeleted a	{
+		color: #c00 !important;
+		text-decoration: line-through !important;
+		text-decoration-line: line-through !important;
+	}
+	body.showChanges .diffdeleted {
+		display: revert;
+	}
+	body.showChanges ins,
+	body.showChanges del {
+		display: inline;
+		position: relative;
+	}
+	body.showChanges ins:focus,
+	body.showChanges ins:hover,
+	body.showChanges .diffadded:hover,
+	body.showChanges .diffadded:focus {
+		background-color: #dbffde;
+	} 
+	body.showChanges del:focus,
+	body.showChanges del:hover,
+	body.showChanges .diffdeleted:hover,
+	body.showChanges .diffdeleted:focus {
+		background-color: #FFDBE2;	
+	}
+	body.showChanges .diffchangeblock,
+	body.showChanges .diffchangeblock td:first-child {
+		border-left: 3px solid blue !important; 
+		padding-left: 3px;
+	}
+	
+	/* Screen reader support for ins and del tags */
+	ins::before, 
+	ins::after,
+	del::before,
+	del::after,
+	div.diffadded::before,
+	div.diffadded::after,
+	div.diffdeleted::before,
+	div.diffdeleted::after,
+	figure.diffadded::before,
+	figure.diffadded::after,
+	figure.diffdeleted::before,
+	figure.diffdeleted::after {
+		clip-path: inset(100%);
+		clip: rect(1px, 1px, 1px, 1px);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
+	ins::before,
+	div.diffadded::before,
+	figure.diffadded::before {
+		content: " insertion start ";
+	}
+	ins::after,
+	div.diffadded::after,
+	figure.diffadded::after {
+		content: " insertion end ";
+	}
+	del::before,
+	div.diffdeleted::before,
+	figure.diffdeleted::before	{
+		content: " deletion start ";
+	}
+	del::after,
+	div.diffdeleted::after,
+	figure.diffdeleted::after {
+		content: " deletion end ";
+	}
+	/* Special handling for tags that don't	inherit display, so can't use display: revert */
+	body.showChanges dl.sc_footnotes dt.diffdeleted, 
+	body.showChanges dl.sc_footnotes dd.diffdeleted {
+	    display: inline-block;
+	}
+	dl.sc_footnotes dd.diffdeleted, 
+	dl.sc_footnotes dt.diffdeleted {
+	    display: none;
+	}
+	/* IE11 hacks - remove after Aug 2021 */
+	@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+		/* IE11 doesn't support disply:revert, so more specificity needed here */
+		body.showChanges div.diffdeleted,
+		body.showChanges fieldset.diffdeleted {
+			display: block;
+		}
+		body.showChanges span.diffdeleted {
+			display: inline;
+		}
+		body.showChanges tr.diffdeleted {
+			display: table-row;
+		}
+		body.showChanges td.diffdeleted,
+		body.showChanges th.diffdeleted {
+			display: table-cell;
+		}
+		/* IE11 falls back to single-underline by default, but this rule will 
+		   fall back to bold, non-underlined instead */
+		body.showChanges .diffadded,
+		body.showChanges .diffadded a {
+			text-decoration: none !important;
+			font-weight: bold !important;
+		}
+	}
+	/* Edge non-Chromium (v.12 - v.18) hacks, same as IE11, just different selector */
+	@supports (-ms-ime-align:auto) {
+		/* IE11 doesn't support disply:revert, so more specificity needed here */
+		body.showChanges div.diffdeleted,
+		body.showChanges fieldset.diffdeleted {
+			display: block;
+		}
+		body.showChanges span.diffdeleted {
+			display: inline;
+		}
+		body.showChanges tr.diffdeleted {
+			display: table-row;
+		}
+		body.showChanges td.diffdeleted,
+		body.showChanges th.diffdeleted {
+			display: table-cell;
+		}
+		/* IE11 falls back to single-underline by default, but this rule will 
+		   fall back to bold, non-underlined instead */
+		body.showChanges .diffadded,
+		body.showChanges .diffadded a {
+			text-decoration: none !important;
+			font-weight: bold !important;
+		}
+	}
+	
+	/****** legacy styling ******/
+	
+	.diffmedia.diffadded { 
+		border: 6px solid #007500 !important;
+	}
+	.diffmovedto { 
+		color: #007500 !important;
+	}
+	.diffmedia.diffdeleted { 
+		border: 6px solid #c00 !important;
+	}
+	tr.diffdeleted td  { 
+		color: #c00 !important;
+		text-decoration: line-through;
+	}
+	.diffmovedfrom {
+		text-decoration: line-through;
+	}
+	.diffmedia.diffchangeblock { 
+		border: 6px solid blue !important; 
+		padding-left: 0px;
+	}
+	.difflegend,
+	.difflegendold {
+		display: none;
+		background-color:#ccc;
+		margin: 0px;
+		font-size: .8em;
+		font-family: Arial, Helvetica, sans-serif;
+     	border:thin black ridge;
+		padding:10px;
+		padding-left: 100px;
+	}
+	.difflegend H2 {
+		margin-bottom: 1px; 
+		margin-top: 3px; 
+		text-align: left;
+	}
+	.difftsoinfo { 
+		float: right;
+		text-align: right;
+	}
+	.diffotherinfo {
+		text-align: center;
+	} 
+	.difflegend TD {
+		font-size: .8em;
+	}
+	.diffaddblock p.difflegend {
+		display: block;
+	}
+	.diffsrmessage {
+		display: inline;
+	}	
+
+
+.screentitle {
+	background-color: buttonface;
+	color: black;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif
+}
+.buttonbar {
+	line-height: 24px;
+}
+.buttonbar .button {
+	text-decoration: none;
+	background-color:buttonface;
+	border-color:buttonhighlight appworkspace buttonshadow buttonhighlight;
+	border-style:solid;
+	border-width:1px;
+	color:#3B3B1F;
+	font-size: 10px;
+	
+}
+#prompt_input {
+	width: 200px;
+}
+#promptwin {
+	width: 225px;
+}	
+</style>
+
+
+<script>
+   function scribeStart(attr, which, page) {
+      var new_win = window.open("/courseleaf/courseleaf.cgi?page=" + page +
+            "&step=scribestart&scribeattr=" + encodeURIComponent(attr) +
+				"&clist=" + encodeURIComponent(which),
+         "scribestart", "resizable,height=800,width=1000,scrollbars");
+      new_win.focus();
+      return false;
+   }
+</script>
+<base target="_blank">
+
+<script>
+function printPage() {
+	focus()
+	print();
+}
+
+function setshow(what) {
+	if (what == 'change') {
+		document.body.classList.add('showChanges');
+	} else if (what == 'new') {
+		document.body.classList.remove('showChanges');
+	}
+	//check for iframes that may have diffs that need to be changed
+	$("iframe").each(function() {
+		var win = this.contentWindow;
+		try {
+			// This will throw an error if the iframe is cross-origin
+			// We do not need to handle the error, only make sure the 
+			// error does not abort our process.
+			if(win.setshow) {
+				win.setshow(what);
+			}
+		} catch (e) { /* ignore errors */ }
+	});
+}
+
+function resizeMe() {
+	if(typeof window.parent.resizeFrame == "function") {
+		setTimeout(window.parent.resizeFrame, 10);
+	}
+}
+
+// Insert a tag as the child of the selected elements such 
+//    that the inserted tag wraps the selected tags' contents
+function insertTag(selector, tag) {
+	var targetItems = document.querySelectorAll(selector);
+
+	if(targetItems.length && typeof tag === "string") {
+		for(var i = 0; i < targetItems.length; i++){
+			var item = targetItems[i];
+			var wrapper = document.createElement(tag);
+			item.appendChild(wrapper);
+			while(item.firstChild !== wrapper)
+				wrapper.appendChild(item.firstChild);
+		}
+	}	
+}
+
+// Address specific case of JAWS + IE11 or non-Chromium Edge,
+//    must use jQuery here for append and prepend support in IE
+function ieShims() {
+	var $insertTags = $('ins, div.diffadded, figure.diffadded');
+	var $deleteTags = $('del, div.diffdeleted, figure.diffdeleted');
+	
+	var insertionSpan = $('<span class="sr-only"></span>');
+	insertionSpan.text(" insertion start ");
+	$insertTags.prepend(insertionSpan);
+	
+	insertionSpan.text(" insertion end ");
+	$insertTags.append(insertionSpan);
+	
+	insertionSpan.text(" deletion start ");
+	$deleteTags.prepend(insertionSpan);
+	
+	insertionSpan.text(" deletion end ");
+	$deleteTags.append(insertionSpan);
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+	resizeMe();
+	// show differences by default
+	document.body.classList.add('showChanges');
+	
+	// Add <ins> and <del> tags
+	insertTag('span.diffadded','ins');
+	insertTag('span.diffdeleted','del');
+	insertTag('tr.diffdeleted td','del');
+	insertTag('tr.diffadded td','ins');
+	
+	// screen reader edge-case for IE and non-Chromium Edge
+	if(!('reversed' in document.createElement('ol'))) ieShims();
+});
+</script>
+
+<title>Program Management</title>
+
+	<link rel="stylesheet" href="/courseleaf/stylesheets/reset.css">
+	<link rel="stylesheet" href="/courseleaf/js/lfjs.css">
+	<link rel="stylesheet" href="/courseleaf/cim/cim.css">
+	<link rel="stylesheet" href="/courseleaf/stylesheets/lfjs-theme.css">
+<style type="text/css">
+</style>
+<link href="custom.css" type="text/css" rel="stylesheet">
+<script src="/courseleaf/js/jquery.js"></script>
+<script src="/courseleaf/js/lfjs.js"></script>
+<script src="/courseleaf/cim/cimclasses.js"></script>
+<script src="/courseleaf/cim/cim.js"></script>
+<script>
+	cim.sc["courseinline"] = {};
+	cim.sc["courseinline"].label = "Inline Course";
+	cim.sc["courseinline"].step = "courseinline";
+	cim.sc["courseinline"].tagname = "courseinline";
+	cim.sc["courseinline"].container = "SPAN";
+	cim.sc["courseinline"].type = "inline";
+	cim.sc["courseinline"].params = "outputFormats=Code Title:[course.code]^Title Code:[course.code] [course.title]^Code:[course.title] ([course.code])^Title Code Hours:[course.title] ([course.code], [course.hours] s.h.)^Code Title Hours:[course.code] [course.title] ([course.hours] s.h.);";
+	cim.sc["courselist"] = {};
+	cim.sc["courselist"].label = "Course List";
+	cim.sc["courselist"].step = "courselist";
+	cim.sc["courselist"].tagname = "courselist";
+	cim.sc["courselist"].container = "FIELDSET";
+	cim.sc["courselist"].type = "block";
+	cim.sc["courselist"].params = "insertAtSelection=true;predefinedComments=true;";
+	cim.scoptions["courselistoptions"] = "Comment,Sequence,Cross Reference,Or Class,Hours[defaultPopulate=hours^commentEnabled=true],Footnote[commentEnabled=true],Indent[type=checkbox^commentEnabled=true],Area Header[type=checkbox^commentEnabled=true]";
+	cim.sc["plangrid"] = {};
+	cim.sc["plangrid"].label = "Plan of Study Grid";
+	cim.sc["plangrid"].step = "plangrid";
+	cim.sc["plangrid"].tagname = "plangrid";
+	cim.sc["plangrid"].container = "FIELDSET";
+	cim.sc["plangrid"].type = "block";
+	cim.sc["plangrid"].params = "insertAtSelection=true;planYears=Year 1,Year 2,Year 3,Year 4,Year 5,Year 6,Year 7;planTerms=Summer I,Summer II,First Summer Session,Second Summer Session,Fall,Spring,Summer;shrinktt=0;widths=20,70,10;pdfshadeheader;predefinedComments=true;";
+	cim.scoptions["plangridoptions"] = "Comment[commentEnabled=true],Sequence,Or Class,Hours[defaultPopulate=hours^commentEnabled=true],Footnote[commentEnabled=true],Indent[type=checkbox^commentEnabled=true]";
+	cim.sc["programembed"] = {};
+	cim.sc["programembed"].label = "Program Requirements";
+	cim.sc["programembed"].step = "embedcontent";
+	cim.sc["programembed"].tagname = "programembed";
+	cim.sc["programembed"].container = "FIELDSET";
+	cim.sc["programembed"].type = "block";
+	cim.sc["programembed"].params = "label=Select Program;";
+	cim.sc["programembedacadplan"] = {};
+	cim.sc["programembedacadplan"].label = "Program Academic Plan";
+	cim.sc["programembedacadplan"].step = "embedcontent";
+	cim.sc["programembedacadplan"].tagname = "programembedacadplan";
+	cim.sc["programembedacadplan"].container = "FIELDSET";
+	cim.sc["programembedacadplan"].type = "block";
+	cim.sc["programembedacadplan"].params = "label=Select Program;type=program;";
+	cim.sc["facbycol"] = {};
+	cim.sc["facbycol"].label = "Faculty";
+	cim.sc["facbycol"].step = "multipick";
+	cim.sc["facbycol"].tagname = "facbycol";
+	cim.sc["facbycol"].container = "FIELDSET";
+	cim.sc["facbycol"].type = "block";
+	cim.sc["facbycol"].params = "pickattr=faccollegelist;showfield=1;savefulldef=true;pickfield=0;album=off;order=on;extrafields=level[Level][Undergraduate:ug^Graduate:g]";
+	cim.sc["blockembed"] = {};
+	cim.sc["blockembed"].label = "Other Content";
+	cim.sc["blockembed"].step = "embedcontent";
+	cim.sc["blockembed"].tagname = "blockembed";
+	cim.sc["blockembed"].container = "FIELDSET";
+	cim.sc["blockembed"].type = "block";
+	cim.sc["blockembed"].params = "";
+	cim.sc["footnote"] = {};
+	cim.sc["footnote"].label = "Footnotes";
+	cim.sc["footnote"].step = "footnote";
+	cim.sc["footnote"].tagname = "footnote";
+	cim.sc["footnote"].container = "FIELDSET";
+	cim.sc["footnote"].type = "block";
+	cim.sc["footnote"].params = "extrasymbols=177,191,8240;";
+	cim.sc["sctable"] = {};
+	cim.sc["sctable"].label = "Pre-Defined Table";
+	cim.sc["sctable"].step = "sctable";
+	cim.sc["sctable"].tagname = "sctable";
+	cim.sc["sctable"].container = "FIELDSET";
+	cim.sc["sctable"].type = "block";
+	cim.sc["sctable"].params = "";
+	cim.sc["onthispage"] = {};
+	cim.sc["onthispage"].label = "On This Page Navigation";
+	cim.sc["onthispage"].step = "onthispage";
+	cim.sc["onthispage"].tagname = "onthispage";
+	cim.sc["onthispage"].container = "FIELDSET";
+	cim.sc["onthispage"].type = "block";
+	cim.sc["onthispage"].params = "canedit=true;headers=h2,h3,h4;title=On This Page[canedit=false];nested=true;alphasort=false;maxitems=0;sections=text,faculty;sectionlinks=true;";
+	cim.sc["sitemapscelement"] = {};
+	cim.sc["sitemapscelement"].label = "Sitemap";
+	cim.sc["sitemapscelement"].step = "sitemapscelement";
+	cim.sc["sitemapscelement"].tagname = "sitemapscelement";
+	cim.sc["sitemapscelement"].container = "FIELDSET";
+	cim.sc["sitemapscelement"].type = "block";
+	cim.sc["sitemapscelement"].params = "label=Sitemap SC Element";
+	cim.sc["degreeinfo"] = {};
+	cim.sc["degreeinfo"].label = "Degree Information Table";
+	cim.sc["degreeinfo"].step = "degreeinfo";
+	cim.sc["degreeinfo"].tagname = "degreeinfo";
+	cim.sc["degreeinfo"].container = "FIELDSET";
+	cim.sc["degreeinfo"].type = "block";
+	cim.sc["degreeinfo"].params = "widths=30,10,15,45;";
+	cim.sc["sccoursedescs"] = {};
+	cim.sc["sccoursedescs"].label = "Course Descriptions (Per Subject)";
+	cim.sc["sccoursedescs"].step = "coursedescsbysubj";
+	cim.sc["sccoursedescs"].tagname = "sccoursedescs";
+	cim.sc["sccoursedescs"].container = "FIELDSET";
+	cim.sc["sccoursedescs"].type = "block";
+	cim.sc["sccoursedescs"].params = "";
+	cim.sc["courseblock"] = {};
+	cim.sc["courseblock"].label = "Course Descriptions (Per Course)";
+	cim.sc["courseblock"].step = "courseblock";
+	cim.sc["courseblock"].tagname = "courseblock";
+	cim.sc["courseblock"].container = "FIELDSET";
+	cim.sc["courseblock"].type = "block";
+	cim.sc["courseblock"].params = "";
+	cim.screendefs["temp"] = {};
+	cim.screendefs["temp"].name = "temp";
+	cim.screendefs["temp"].isdefault = false;
+	cim.screendefs["temp"].clearvalues = true;
+	cim.screendefs["temp"].condition = "location=TEMP";
+	cim.screendefs["temp"].field = "location";
+	cim.screendefs["temp"].operator = "=";
+	cim.screendefs["temp"].value = "TEMP";
+	cim.screendefs["temp"].options = {};
+	cim.screendefs["temp"].tcaval = null;
+	cim.screendefs["undergrad"] = {};
+	cim.screendefs["undergrad"].name = "undergrad";
+	cim.screendefs["undergrad"].isdefault = false;
+	cim.screendefs["undergrad"].clearvalues = true;
+	cim.screendefs["undergrad"].condition = "acad_level=UG";
+	cim.screendefs["undergrad"].field = "acad_level";
+	cim.screendefs["undergrad"].operator = "=";
+	cim.screendefs["undergrad"].value = "UG";
+	cim.screendefs["undergrad"].options = {};
+	cim.screendefs["undergrad"].tcaval = null;
+	cim.screendefs["app"] = {};
+	cim.screendefs["app"].name = "app";
+	cim.screendefs["app"].isdefault = false;
+	cim.screendefs["app"].clearvalues = true;
+	cim.screendefs["app"].condition = "location=APP";
+	cim.screendefs["app"].field = "location";
+	cim.screendefs["app"].operator = "=";
+	cim.screendefs["app"].value = "APP";
+	cim.screendefs["app"].options = {};
+	cim.screendefs["app"].tcaval = null;
+	cim.screendefs["oth"] = {};
+	cim.screendefs["oth"].name = "oth";
+	cim.screendefs["oth"].isdefault = false;
+	cim.screendefs["oth"].clearvalues = true;
+	cim.screendefs["oth"].condition = "location=OTH";
+	cim.screendefs["oth"].field = "location";
+	cim.screendefs["oth"].operator = "=";
+	cim.screendefs["oth"].value = "OTH";
+	cim.screendefs["oth"].options = {};
+	cim.screendefs["oth"].tcaval = null;
+	cim.screendefs["colled"] = {};
+	cim.screendefs["colled"].name = "colled";
+	cim.screendefs["colled"].isdefault = false;
+	cim.screendefs["colled"].clearvalues = true;
+	cim.screendefs["colled"].condition = "college=ED";
+	cim.screendefs["colled"].field = "college";
+	cim.screendefs["colled"].operator = "=";
+	cim.screendefs["colled"].value = "ED";
+	cim.screendefs["colled"].options = {};
+	cim.screendefs["colled"].tcaval = null;
+	cim.screendefs["maj"] = {};
+	cim.screendefs["maj"].name = "maj";
+	cim.screendefs["maj"].isdefault = false;
+	cim.screendefs["maj"].clearvalues = true;
+	cim.screendefs["maj"].condition = "program_type=MAJ,MJC,TRK,COM,DDA,JDG";
+	cim.screendefs["maj"].field = "program_type";
+	cim.screendefs["maj"].operator = "=";
+	cim.screendefs["maj"].value = "MAJ,MJC,TRK,COM,DDA,JDG";
+	cim.screendefs["maj"].options = {};
+	cim.screendefs["maj"].tcaval = null;
+	cim.screendefs["minor"] = {};
+	cim.screendefs["minor"].name = "minor";
+	cim.screendefs["minor"].isdefault = false;
+	cim.screendefs["minor"].clearvalues = true;
+	cim.screendefs["minor"].condition = "program_type=MIN";
+	cim.screendefs["minor"].field = "program_type";
+	cim.screendefs["minor"].operator = "=";
+	cim.screendefs["minor"].value = "MIN";
+	cim.screendefs["minor"].options = {};
+	cim.screendefs["minor"].tcaval = null;
+	cim.screendefs["term_differ"] = {};
+	cim.screendefs["term_differ"].name = "term_differ";
+	cim.screendefs["term_differ"].isdefault = false;
+	cim.screendefs["term_differ"].clearvalues = true;
+	cim.screendefs["term_differ"].condition = "term_differ=Yes";
+	cim.screendefs["term_differ"].field = "term_differ";
+	cim.screendefs["term_differ"].operator = "=";
+	cim.screendefs["term_differ"].value = "Yes";
+	cim.screendefs["term_differ"].options = {};
+	cim.screendefs["term_differ"].tcaval = null;
+	cim.screendefs["licensure"] = {};
+	cim.screendefs["licensure"].name = "licensure";
+	cim.screendefs["licensure"].isdefault = false;
+	cim.screendefs["licensure"].clearvalues = true;
+	cim.screendefs["licensure"].condition = "licensure=Yes";
+	cim.screendefs["licensure"].field = "licensure";
+	cim.screendefs["licensure"].operator = "=";
+	cim.screendefs["licensure"].value = "Yes";
+	cim.screendefs["licensure"].options = {};
+	cim.screendefs["licensure"].tcaval = null;
+	cim.screendefs["overlap"] = {};
+	cim.screendefs["overlap"].name = "overlap";
+	cim.screendefs["overlap"].isdefault = false;
+	cim.screendefs["overlap"].clearvalues = true;
+	cim.screendefs["overlap"].condition = "overlap=Yes";
+	cim.screendefs["overlap"].field = "overlap";
+	cim.screendefs["overlap"].operator = "=";
+	cim.screendefs["overlap"].value = "Yes";
+	cim.screendefs["overlap"].options = {};
+	cim.screendefs["overlap"].tcaval = null;
+	cim.screendefs["support"] = {};
+	cim.screendefs["support"].name = "support";
+	cim.screendefs["support"].isdefault = false;
+	cim.screendefs["support"].clearvalues = true;
+	cim.screendefs["support"].condition = "support=Yes";
+	cim.screendefs["support"].field = "support";
+	cim.screendefs["support"].operator = "=";
+	cim.screendefs["support"].value = "Yes";
+	cim.screendefs["support"].options = {};
+	cim.screendefs["support"].tcaval = null;
+	cim.screendefs["concerns"] = {};
+	cim.screendefs["concerns"].name = "concerns";
+	cim.screendefs["concerns"].isdefault = false;
+	cim.screendefs["concerns"].clearvalues = true;
+	cim.screendefs["concerns"].condition = "concerns=Yes";
+	cim.screendefs["concerns"].field = "concerns";
+	cim.screendefs["concerns"].operator = "=";
+	cim.screendefs["concerns"].value = "Yes";
+	cim.screendefs["concerns"].options = {};
+	cim.screendefs["concerns"].tcaval = null;
+	cim.screendefs["prog_course_change"] = {};
+	cim.screendefs["prog_course_change"].name = "prog_course_change";
+	cim.screendefs["prog_course_change"].isdefault = false;
+	cim.screendefs["prog_course_change"].clearvalues = true;
+	cim.screendefs["prog_course_change"].condition = "prog_course_change=Yes";
+	cim.screendefs["prog_course_change"].field = "prog_course_change";
+	cim.screendefs["prog_course_change"].operator = "=";
+	cim.screendefs["prog_course_change"].value = "Yes";
+	cim.screendefs["prog_course_change"].options = {};
+	cim.screendefs["prog_course_change"].tcaval = null;
+	cim.screendefs["articulation_impact"] = {};
+	cim.screendefs["articulation_impact"].name = "articulation_impact";
+	cim.screendefs["articulation_impact"].isdefault = false;
+	cim.screendefs["articulation_impact"].clearvalues = true;
+	cim.screendefs["articulation_impact"].condition = "articulation_impact=Yes";
+	cim.screendefs["articulation_impact"].field = "articulation_impact";
+	cim.screendefs["articulation_impact"].operator = "=";
+	cim.screendefs["articulation_impact"].value = "Yes";
+	cim.screendefs["articulation_impact"].options = {};
+	cim.screendefs["articulation_impact"].tcaval = null;
+	cim.screendefs["del_articulation_impact"] = {};
+	cim.screendefs["del_articulation_impact"].name = "del_articulation_impact";
+	cim.screendefs["del_articulation_impact"].isdefault = false;
+	cim.screendefs["del_articulation_impact"].clearvalues = true;
+	cim.screendefs["del_articulation_impact"].condition = "del_articulation_impact=Yes";
+	cim.screendefs["del_articulation_impact"].field = "del_articulation_impact";
+	cim.screendefs["del_articulation_impact"].operator = "=";
+	cim.screendefs["del_articulation_impact"].value = "Yes";
+	cim.screendefs["del_articulation_impact"].options = {};
+	cim.screendefs["del_articulation_impact"].tcaval = null;
+	cim.screendefs["online"] = {};
+	cim.screendefs["online"].name = "online";
+	cim.screendefs["online"].isdefault = false;
+	cim.screendefs["online"].clearvalues = true;
+	cim.screendefs["online"].condition = "online=Yes";
+	cim.screendefs["online"].field = "online";
+	cim.screendefs["online"].operator = "=";
+	cim.screendefs["online"].value = "Yes";
+	cim.screendefs["online"].options = {};
+	cim.screendefs["online"].tcaval = null;
+	cim.screendefs["online_assess"] = {};
+	cim.screendefs["online_assess"].name = "online_assess";
+	cim.screendefs["online_assess"].isdefault = false;
+	cim.screendefs["online_assess"].clearvalues = true;
+	cim.screendefs["online_assess"].condition = "online_assess=No";
+	cim.screendefs["online_assess"].field = "online_assess";
+	cim.screendefs["online_assess"].operator = "=";
+	cim.screendefs["online_assess"].value = "No";
+	cim.screendefs["online_assess"].options = {};
+	cim.screendefs["online_assess"].tcaval = null;
+
+	cim.courseRE = /\b([a-zA-Z]{2,4}\s[a-zA-Z]{0,4}\d{3,4})\b/gi;
+
+
+	cim.departmentRE = /^([a-zA-Z]{2,4}) ([a-zA-Z]{0,4}\d{3,4})$/;
+
+	cim.progname = "/courseleaf/courseleaf.cgi";
+	cim.pagename = "/programadmin/index.html";
+	cim.pagebase = cim.pagename.replace(/.*\/([^\/]*)$/, "$1");
+	cim.pathbase = cim.pagename.replace(/(.*\/)[^\/]*$/, "$1");
+	cim.cimurl = "/courseadmin/";
+	cim.programurl = "/programadmin/";
+	cim.url = cim.progname + "?page=" + cim.pagename;
+	cim.uploadurl = cim.progname + "?page=" + cim.pagename;
+	cim.progdir = "/courseleaf";
+	cim.target = "program";
+	cim.dbname = "cimcourses";
+	cim.cimtype = "Program";
+	cim.template = "cim";
+	cim.isadmin = false;
+
+
+	cim.isstep = false;
+
+
+
+	function courseleaflogin() {
+		var new_win =   window.open("/courseleaf/courseleaf.cgi?page=/programadmin/index.html&step=afterlogin",
+			"plwin","resizable,height=500,width=500,scrollbars");
+		new_win.focus();
+		return false;
+	}
+	function courseleafhelp() {
+		var new_win =   window.open("/courseleaf/courseleaf.cgi?page=/programadmin/index.html&step=help&helpfile=cim",
+			"plwin","resizable,height=500,width=700,scrollbars");
+		new_win.focus();
+		return false;
+	}
+	query.searchcrit = [
+		{field: "key", label: "Key", fieldtype: "number", options:"basic", value: "" },
+		{field: "code", label: "Course Code", fieldtype: "string", options:"basic", value: "" },
+		{field: "programtitle", label: "Title", fieldtype: "string", options:"basic", value: "" },
+		{field: "program_status.status", label: "Status", fieldtype: "string", options:"basic", value: "" },
+		{field: "program_status.nextapprove", label: "Status", fieldtype: "string", options:"basic", value: "" }
+	];
+	query.columns = [
+		{name:"Program Code", field:"code", width: "15%" },
+		{name:"Title", field:"programtitle", width: "60%" },
+		{name:"Workflow", field:"nextapprove", width: "15%" },
+		{name:"Status", field:"status", width: "10%" }
+	];
+	query.predefined.push({ name: "Edited Programs", crit: "program_status.status=*edited*"});
+	query.predefined.push({ name: "Added Programs", crit: "program_status.status=*added*"});
+	query.predefined.push({ name: "Deactivated Programs", crit: "program_status.status=*deleted*"});
+</script>
+<script src="custom.js?ver="></script>
+<script>
+</script>
+
+</head>
+<body class="showChanges">
+<div id="container">
+	<div id="header" class="clearfix">
+<img src="/images/logo.png">
+	</div>
+
+	<div id="content">
+		<div id="helpbutton"><a href="#" onclick="return courseleafhelp();" tabindex="0">Help <img align="texttop" src="/courseleaf/cim/images/help.png" alt=""></a></div>
+		<h1 class="cimtitle">Program Management</h1>
+
+		<div id="instructiontext">
+			This form is used to  establish, revise and terminate programs.<br>To establish a new program, click on the green “Propose New Program” button.<br>To terminate a program, search for the program,  click on the program in the grid below, and then click on the red “Terminate Program” button.<br>To revise an existing program, search for it, click on the program in the grid below, and then click the green "Edit Program" button.<br>To search for a program, enter a search term and click the green “Search” button. Use an asterisk (*) in the search box as a wild card. The placement of the wild card will yield different results. <em>For example:<ul><li>CHEM* will find everything that starts with “CHEM”.</li><li>*CHEM will find everything that ends with “CHEM”.</li><li>*CHEM* will find everything that contains “CHEM.”</li></ul></em>The search term is not case-sensitive. The system searches the Program Code, Title, Workflow step and CIM Status.<br>Quick Searches offer a predefined list of search categories.
+		</div>
+
+		<div class="clearfix">
+
+		<form id="search_form" onsubmit="query.search($('#search_field').val()); return false">
+				<label for="search_field" class="hide">Search</label>
+			<input type="text" id="search_field" name="search" value="" tabindex="0">
+
+			<input type="submit" id="search_button" class="b_medium btn btn-green" value="Search" tabindex="0">
+			<div id="search_options">
+				<label for="search_history" title="Also search history"><input id="search_history" type="checkbox" tabindex="0"> History</label>
+			</div>
+ - OR -
+			<input type="button" id="add_new_record" class="btn btn-green b_xlarge" value="Propose New Program" onclick="cim.add.launch(); return false;" tabindex="0">
+		</form>
+			<div id="topactions">
+				<label for="defaultqueries" class="hide">Quick Searches</label>
+				<select id="defaultqueries" tabindex="0">
+					<option value="">Quick Searches...</option>
+				<option value="program_status.status=*edited*">Edited Programs</option><option value="program_status.status=*added*">Added Programs</option><option value="program_status.status=*deleted*">Deactivated Programs</option></select>
+			</div>
+		</div>
+
+		<div class="stickycontainer">
+			<div id="queryresults" class="selectgrid sticky pausable printable" aria-live="polite"><table width="100%" cellspacing="0"><colgroup><col width="15%"><col width="60%"><col width="15%"><col width="10%"></colgroup><thead style="width: 948px;"><tr><th title="Click to sort by Program Code" tabindex="0" style="width: 136.2px;">Program Code</th><th title="Click to sort by Title" tabindex="0" style="width: 562.8px;">Title</th><th title="Click to sort by Workflow" tabindex="0" style="width: 136.2px;">Workflow</th><th title="Click to sort by Status" tabindex="0" style="width: 88.8px;">Status</th></tr></thead><tbody tabindex="0"><tr class="odd" tabindex="0"><td class="firstcolumn" tabindex="-1">BC-PPED-BMUSIC</td><td tabindex="-1">B.M. in Piano Pedagogy</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-ACFM-MS</td><td tabindex="-1">MS in Accounting and Financial Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Business Analytics</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Business Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Enterprise Risk Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Entrepreneurship</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Financial Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Health Sector Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Human Resource Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Innovation Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Marketing Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Strategic Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">M.B.A. in Business Administration with Concentration in Supply Chain Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-BA-MBA</td><td tabindex="-1">MBA Concentration in Real Estate</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-CID-GRADC</td><td tabindex="-1">Graduate Certificate in Corporate Instructional Design</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-CSR-MINOR</td><td tabindex="-1">Minor in Corporate Social Responsibility</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-DIM-MS</td><td tabindex="-1">M.S. in Digital Innovation in Marketing</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-ELWB-MINOR</td><td tabindex="-1">Minor in Entertainment Law and Business</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-ENTC-GRADC</td><td tabindex="-1">Graduate Certificate in Entrepreneurship and Technology Commercialization</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-FAQR-MS</td><td tabindex="-1">M.S. in Financial Analysis and Quantitative Risk Management</td><td tabindex="-1">Vice Provost for the Graduate School</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-FIN-BBA</td><td tabindex="-1">B.B.A. in Finance with Concentration in Investment Analysis</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-FIN-BBA</td><td tabindex="-1">B.B.A. in Finance with Concentration in Corporate Valuation</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-FIN-BBA</td><td tabindex="-1">B.B.A. in Finance with Concentration in Banking and Financial Services  </td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-HCIM-GRADC</td><td tabindex="-1">Graduate Certificate in Healthcare Innovation Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-HRLS-MINOR</td><td tabindex="-1">Minor in Human Resource for Legal Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-INVS-GRADC</td><td tabindex="-1">Graduate Certificate in Innovation Strategy</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-ITIE-MINOR</td><td tabindex="-1">Minor in Information Technology Innovation and Entrepreneurship</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-LSHR-MINOR</td><td tabindex="-1">Minor in Legal Studies for Human Resource Managers</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-LSRE-MINOR</td><td tabindex="-1">Minor in Legal Studies for Real Estate Majors</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-MNGC-GRADC</td><td tabindex="-1">Graduate Certificate in Management Consulting</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-MNGC-MINOR</td><td tabindex="-1">Minor in Management Consulting</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-MRI-MS</td><td tabindex="-1">M.S. in Marketing Research and Insights</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-QFRM-MS</td><td tabindex="-1">M.S. in Quantitative Finance and Risk Management</td><td tabindex="-1">Vice Provost for the Graduate School</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-RE-GRADC</td><td tabindex="-1">Graduate Certificate in Real Estate</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">BU-RE-MS</td><td tabindex="-1">M.S. in Real Estate</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">BU-STAM-MS</td><td tabindex="-1">M.S. in Strategic Advertising and Marketing</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">CA-MTST-MA</td><td tabindex="-1">M.A. in Musical Theater Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">CA-THIN-MA</td><td tabindex="-1">M.A. in Theater Instruction</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">CA-THTR-BA</td><td tabindex="-1">B.A. in Theater with Concentration in Musical Theater</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">CO-CMST-BA</td><td tabindex="-1">B.A. in Communication Studies with Track in Global Civil Society</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">CO-CMST-BA</td><td tabindex="-1">B.A. in Communication Studies with Track in Policy, Regulation and Advocacy</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">CO-COCO-MS</td><td tabindex="-1">M.S. in Conflict and Communication </td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">CO-CSI-BA</td><td tabindex="-1">B.A. in Communication and Social Influence</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">CO-MSP-BA</td><td tabindex="-1">B.A. in Media Studies and Production with Track in Emergent Media</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">CO-STRC-BA</td><td tabindex="-1">B.A. in Strategic Communication</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">CO-STRC-BA</td><td tabindex="-1">B.A. in Strategic Communication with Concentration in Organizational Leadership</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">CO-STRC-BA</td><td tabindex="-1">B.A. in Strategic Communication with Concentration in Public Relations</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">CO-STRC-BA</td><td tabindex="-1">B.A. in Strategic Communication with Concentration in Rhetoric and Public Advocacy</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-AOD-BA</td><td tabindex="-1">B.A. in Adult and Organizational Development</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-AOD-MINOR</td><td tabindex="-1">Minor in Adult and Organizational Development</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-AVOD-MED</td><td tabindex="-1">M.Ed. in Advocacy and Organizational Development</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-CTE-MED</td><td tabindex="-1">M.Ed. in Career and Technical Education with Concentration in Marketing Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-CTE-MED</td><td tabindex="-1">M.Ed. in Career and Technical Education with Concentration in Business, Computer and Information Technology</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-CTE-MED</td><td tabindex="-1">M.Ed. in Career and Technical Education with Concentration in Industrial Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-ECED-BSED</td><td tabindex="-1">B.S.Ed. in Early Childhood-Elementary Education (PreK-4) with Concentration in Special Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-ECED-BSED</td><td tabindex="-1">B.S.Ed. in Early Childhood-Elementary Education (PreK-4)</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-ECED-MED</td><td tabindex="-1">M.Ed. in Early Childhood Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-EDLP-MED</td><td tabindex="-1">Educational Leadership and Policy with required concentrations in Education Policy, School Leadership, and Urban Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-EDSE-MED</td><td tabindex="-1">M.Ed. in Early Childhood Education and Special Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-EPSY-MED</td><td tabindex="-1">M.Ed. in Educational Psychology</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentrations in Mathematics and Science</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentration in Science</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentrations in Mathematics and Language Arts</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentrations in Science and Language Arts</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentration in Social Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentration in Language Arts</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-MGSE-MED</td><td tabindex="-1">M.Ed. in Middle Grades and Special Education with Concentration in Mathematics</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-SCHL-MED</td><td tabindex="-1">M.Ed. in School Leadership with Concentration in Curriculum Supervision</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-SCHL-MED</td><td tabindex="-1">M.Ed. in School Leadership with Concentration in Principal Leadership</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-SCHL-MED</td><td tabindex="-1">M.Ed. in School Leadership with Concentration in Reform and Change Leadership</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-SESE-BSED</td><td tabindex="-1">B.S.Ed. in Secondary Education / Science Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-SESP-MED</td><td tabindex="-1">M.Ed. in Secondary Education and Special Education with Concentration in English Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-SESP-MED</td><td tabindex="-1">M.Ed. in Secondary Education and Special Education with Concentration in Mathematics Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-SESP-MED</td><td tabindex="-1">M.Ed. in Secondary Education and Special Education with Concentration in Science Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-SESP-MED</td><td tabindex="-1">M.Ed. in Secondary Education and Special Education with Concentration in World/Foreign Languages Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-SESP-MED</td><td tabindex="-1">M.Ed. in Secondary Education and Special Education with Concentration in Social Studies Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-TCLS-MED</td><td tabindex="-1">M.Ed. in Teacher Leadership</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-THEC-GRADC</td><td tabindex="-1">Graduate Certificate in Teaching in Higher Education for the Creative Disciplines</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-TROD-GRADC</td><td tabindex="-1">Graduate Certificate in Training and Organizational Development</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ED-URBE-MED</td><td tabindex="-1">M.Ed. in Urban Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ED-USL-MED</td><td tabindex="-1">M.Ed. in Urban School Leadership</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">EN-ECE-BSEE</td><td tabindex="-1">B.S.E.E. in Electrical Engineering</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">EN-ECE-BSEE</td><td tabindex="-1">B.S.E.E. in Electrical Engineering with Concentration in Bioelectrical Engineering</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">EN-ECE-BSEE</td><td tabindex="-1">B.S.E.E. in Electrical Engineering with Concentration in Computer Engineering</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">EN-ECE-BSEE</td><td tabindex="-1">B.S.E.E. in Electrical Engineering with Concentration in Cooperative Education Program</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">EN-ECE-BSEE</td><td tabindex="-1">B.S.E.E. in Electrical Engineering with Concentrations in Bioelectrical Engineering and Cooperative Education Program</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">EN-ECE-BSEE</td><td tabindex="-1">B.S.E.E. in Electrical Engineering with Concentrations in Computer Engineering and Cooperative Education Program</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">EN-ENGR-PHD</td><td tabindex="-1">Ph.D. in Engineering</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-APHP-MS</td><td tabindex="-1">MS in Applied Physical Activity and Health Promotion</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-CHSR-GRADC</td><td tabindex="-1">Graduate Certificate in Clinical Health Services Research</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-CLRS-MS</td><td tabindex="-1">M.S. in Clinical Research and Translational Medicine</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-CSCD-MINOR</td><td tabindex="-1">Minor in Communication Sciences and Disorders</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-EMSP-CERTIF</td><td tabindex="-1">Certificate in Emergency Management with Special Populations</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-HOMS-GRADC</td><td tabindex="-1">Graduate Certificate in Health Outcomes and Measurement Science</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-IHC-GRADC</td><td tabindex="-1">Graduate Certificate in Interdisciplinary Health Communication</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-KINS-BS</td><td tabindex="-1">B.S. in Kinesiology with Concentration in Physical and Health Education Teacher Education</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-KINS-MS</td><td tabindex="-1">M.S. in Kinesiology with Concentration in Athletic Training</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-KINS-MS</td><td tabindex="-1">M.S. in Kinesiology with Concentration in Integrative Exercise Physiology</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-KINS-MS</td><td tabindex="-1">M.S. in Kinesiology with Concentration in Psychology of Movement</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-KINS-PHD</td><td tabindex="-1">Ph.D. in Kinesiology with Concentration in Integrative Exercise Physiology</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-KINS-PHD</td><td tabindex="-1">Ph.D. in Kinesiology with Concentration in Psychology of Movement</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-KINS-PHD</td><td tabindex="-1">Ph.D. in Kinesiology with Concentration in Athletic Training</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-MACH-GRADC</td><td tabindex="-1">Graduate Certificate in Maternal and Child Health</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-NURN-BSNURS</td><td tabindex="-1">B.S.N. in Nursing: Registered Nurse Option</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-NUTR-GRADC</td><td tabindex="-1">Graduate Certificate in Nutrition</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-OTHR-MOT</td><td tabindex="-1">M.O.T. in Occupational Therapy</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">HP-OTHR-OTD</td><td tabindex="-1">O.T.D. in Occupational Therapy</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">HP-PBPR-GRADC</td><td tabindex="-1">Graduate Certificate in Public Health Preparedness and Response</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">LA-AAST-MINOR</td><td tabindex="-1">Minor in Asian American Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">LA-AAST-MINOR</td><td tabindex="-1">Minor in Asian American Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">LA-ANTH-BA</td><td tabindex="-1">B.A. in Anthropology with Visual Anthropology Track</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">LA-ANTH-BA</td><td tabindex="-1">B.A. in Anthropology with Concentration in Human Biology</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">LA-ASOC-PSM</td><td tabindex="-1">P.S.M. in Applied Sociology</td><td tabindex="-1">Vice Provost for the Graduate School</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">LA-ECON-MA</td><td tabindex="-1">M.A. in Economics</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">LA-ECON-PHD</td><td tabindex="-1">Ph.D. in Economics</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">LA-ENG-BA</td><td tabindex="-1">B.A. in English with Concentration in Creative Writing</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">LA-GUS-MA</td><td tabindex="-1">M.A. in Geography and Urban Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">LA-GUS-PHD</td><td tabindex="-1">Ph.D. in Geography and Urban Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">LA-LAS-BA</td><td tabindex="-1">B.A. in Latin American Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">LA-LAS-MINOR</td><td tabindex="-1">Minor in Latin American Studies</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ME-UBTH-GRADC</td><td tabindex="-1">Graduate Certificate in Urban Bioethics</td><td tabindex="-1">ME Graduate Curriculum Chair</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ME-UBTH-MA</td><td tabindex="-1">M.A. in Urban Bioethics</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">PH-PS-MS</td><td tabindex="-1">M.S. in Pharmaceutical Sciences with Concentration in Medicinal Chemistry</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">PH-PS-MS</td><td tabindex="-1">M.S. in Pharmaceutical Sciences with Concentration in Pharmaceutics</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">PH-PS-MS</td><td tabindex="-1">M.S. in Pharmaceutical Sciences with Concentration in Pharmacodynamics</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ST-ACSS-CERTPB</td><td tabindex="-1">Certificate in Advanced Core Science Studies</td><td tabindex="-1">Undergraduate Studies Office</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ST-BCSS-CERTPB</td><td tabindex="-1">Certificate in Basic Core Science Studies</td><td tabindex="-1">Undergraduate Studies Office</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">ST-BINF-PSM</td><td tabindex="-1">P.S.M. in Bioinformatics</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">ST-MSCI-BS</td><td tabindex="-1">B.S. in Materials Science</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">SW-MC-GRCRPM</td><td tabindex="-1">Post-Master's Graduate Certificate in Military Counseling</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">SW-SSWU-MINOR</td><td tabindex="-1">Minor in Social Work</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">TA-GIDE-BFA</td><td tabindex="-1">B.F.A. in Graphic and Interactive Design with Entrepreneurial Studies</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">TH-EVEM-BS</td><td tabindex="-1">Bachelor of Science in Event and Entertainment Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">TH-PBUS-BS</td><td tabindex="-1">Pre-Business</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">TH-SBEP-MS</td><td tabindex="-1">M.S. in Sport Business Executive Program</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">TH-SPMK-CERTIF</td><td tabindex="-1">Certificate in Sport Marketing</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">TH-SPRM-BS</td><td tabindex="-1">B.S. in Sport and Recreation Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">TH-STHM-BS</td><td tabindex="-1">B.S. in Tourism and Hospitality Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">TH-STHM-MTHM</td><td tabindex="-1">M.T.H.M. in Tourism and Hospitality Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">TH-TRVT-MS</td><td tabindex="-1">M.S. in Travel and Tourism</td><td tabindex="-1">University Open Review</td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr class="odd"><td class="firstcolumn" tabindex="-1">UC-PRAN-CERTIF</td><td tabindex="-1">Certificate in National Park Service Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr><tr><td class="firstcolumn" tabindex="-1">UC-PRAN-CERTIF</td><td tabindex="-1">Post-Baccalaureate Certificate in National Park Service Management</td><td tabindex="-1"></td><td class="lastcolumn" tabindex="-1">Deleted</td></tr></tbody></table></div>
+		</div>
+		<div id="showcontent" aria-live="polite"></div>
+	</div>
+</div>
+<div id="footer">
+</div>
+
+
+
+<script>$(function() { $("#loginwindow .screentitle").text("Please Complete Log In");});</script>
+
+
+<div class="screen bundlepickscreen noexport inactivescreen" id="bundlepickscreen" role="dialog">
+	<div class="screentitle">Choose Proposals to Bundle</div>
+	<div class="screencontents">
+		<div class="row">
+			<p class="bundle-pick-message">Select any proposals you would like to bundle together for approval.  Only proposals you have saved are available to bundle.</p>
+		</div>
+		<div class="row bundle-title-container">
+				<label for="bundletitle">Bundle Title:</label>
+				<input type="text" name="bundletitle" id="bundletitle" tabindex="-1">
+		</div>
+		<div class="row bundle-list full_line">
+			<fieldset>
+				<legend>Course:</legend>
+				<div class="checkbox inline"><label for="proposal_to_bundleA"><input class="" type="checkbox" name="proposal_to_bundle" id="proposal_to_bundleA" value="A" tabindex="-1"> Proposal A</label>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend>Program:</legend>
+				<div class="checkbox inline"><label for="proposal_to_bundleB"><input class="" type="checkbox" name="proposal_to_bundle" id="proposal_to_bundleB" value="B" tabindex="-1"> Proposal B</label>
+				</div>
+
+			</fieldset>
+		</div>
+	</div>
+	<div class="screenfooter" style="text-align: center; padding: 6px;">
+		<button class="submitbtn btn btn-green" tabindex="-1">Submit</button>
+		<button class="cancelbtn btn btn-red" tabindex="-1">Cancel</button>
+	</div>
+</div><div id="critwin" class="screen inactivescreen" role="dialog">
+<div id="critfs"></div>
+<div class="buttonbar">
+	<a href="#" onclick="this.blur(); lfjs.keypress.stuff('ctrl+enter'); return false;" class="button"> Search </a>
+	<a href="#" onclick="this.blur(); lfjs.keypress.stuff('esc'); return false;" class="button"> Cancel </a>
+</div>
+</div><div id="loginwindow" class="screen inactivescreen" aria-modal="true" role="dialog">
+	<p align="center">In order to authorize your ability to update, please click the icon to complete your log in.<br>
+		<a href="#" id="loginuser" onclick="courseleaflogin(); return false;"><img alt="Login" src="/courseleaf/images/icons/CourseLeaf_icon.png" border="0"></a></p>
+</div><div class="screen inactivescreen" id="loadingwindow" role="dialog"><table><tbody><tr><td><img id="loadingimg" src="/courseleaf/cim/images/loading_large.gif" alt="Loading"></td><td id="loadingmessage"></td></tr></tbody></table></div></body></html>

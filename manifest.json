@@ -22,7 +22,8 @@
   "content_scripts": [
     {
       "js": [
-        "content_programadmin.js"
+        "summary_help.js",
+        "add_predefined_searches.js"
       ],
       "css": [
         "resize_frames.css"

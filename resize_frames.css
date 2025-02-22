@@ -34,3 +34,13 @@
 .moreinfogrid {
   width: 380px;
 }
+
+
+
+#content #queryresults {
+  height: 600px !important;
+}
+
+#content .selectgrid {
+  max-height: 600px !important;
+}

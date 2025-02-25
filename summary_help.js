@@ -19,16 +19,6 @@ function waitForElm(selector) {
   });
 }
 
-/*
-function wrap(el, wrapper) {
-  el.parentNode.insertBefore(wrapper, el);
-  wrapper.appendChild(el);
-}
-*/
-
-// call function
-// wrapping element "wrap_me" into a new element "wrapper"
-// wrap(document.querySelector('div.wrap_me'), document.createElement('div'));
 
 
 
@@ -44,9 +34,11 @@ function help_img_elem() {
 
 function replace_instructiontext(id) {
   waitForElm(id).then((instructiontext) => {
-    // Only change text if it is exactly as expected
+
+    // Only insert details-summary if  text if it is exactly as expected
     const pageText = instructiontext.innerText
     if (pageText === origText) {
+
       const details = document.createElement('details');
       const summary = document.createElement('summary');
       summary.appendChild(instructiontext.firstChild)

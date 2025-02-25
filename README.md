@@ -1,6 +1,8 @@
 # moreinfo : UI tweaks in cim
 
+Add predifined searches and simplify web page for Temple University Program Admin web page.
 
+![Screenshot](Screenshot2025-02-22 .png "Screenshot")
 
 ## Running this extension
 

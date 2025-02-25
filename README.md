@@ -1,4 +1,4 @@
-# cimshift : UI tweaks in cim
+# moreinfo : UI tweaks in cim
 
 
 

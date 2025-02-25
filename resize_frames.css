@@ -1,0 +1,7 @@
+#content #queryresults {
+  height: 300px !important;
+}
+
+#content .selectgrid {
+  max-height: 300px !important;
+}

@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "CimShift",
+  "name": " nextbulletin rework UI",
   "version": "1.0",
-  "description": "UI tweaks in cim",
-
+  "description": "Add predifined searches and simplify web page for Temple University Program Admin web page.",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -12,12 +11,15 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/content.js"],
-      "css": ["cimshift.css"],
-      "all_frames": true,
+      "js": [
+        "summary_help.js",
+        "add_predefined_searches.js"
+      ],
+      "css": [
+        "resize_frames.css"
+      ],
       "matches": [
-        "https://nextbulletin.temple.edu/programadmin/*", 
-        "https://nextbulletin.temple.edu/courseleaf/*"
+        "https://nextbulletin.temple.edu/programadmin/*"
       ]
     }
   ]

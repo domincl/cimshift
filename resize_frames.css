@@ -1,44 +1,5 @@
-.moreinfotable th {
-  text-align: center;
-  font-weight: bold;
-  color: #9c1c33;
-  background-color: #efe1c6;
-  padding: 3px 3px !important;
-  border: solid 1px #efe1c6;
-}
-
-.moreinfotable td {
-  padding: 3px !important;
-  border: solid 1px #efe1c6;
-}
-
-/*
-.moreinfotable td.cell1 {
-  font-weight: bold;
-  color: #9c1c33;
-  background-color: #efe1c6;
-  padding: 3px;
-  border: solid 1px #efe1c6;
-  vertical-align: center;
-}
-*/
-
-.moreinfotable caption {
-  font-size: 12px;
-  text-align: right;
-  position: static;
-  caption-side: bottom;
-}
-
-
-.moreinfogrid {
-  width: 380px;
-}
-
-
-
 #content #queryresults {
-  height: 600px !important;
+  height: 300px !important;
 }
 
 #content .selectgrid {

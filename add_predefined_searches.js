@@ -1,3 +1,12 @@
+const predef_searches = {
+  "ST CIS BS": "ST-CSCI-BS, ST-CSPH-BS, ST-CYBR-BS, ST-DTSC-BS, ST-IST-BS, ST-MACS-BS, ST-MCTC-BS",
+  "ST CIS BA": "ST-CSCI-BA, ST-IST-BA",
+  "ST CIS MINOR": "ST-CSCI-MINOR, ST-IST-MINOR, ST-DSCA-MINOR",
+  "ST CIS CERTIF": "ST-CSDF-CERTIF, ST-DSCA-CERT, ST-FPRG-CERTIF, ST-MAPD-CERTIF",
+  "ST CIS all UG ": "ST-CSCI-BS, ST-CSPH-BS, ST-CYBR-BS, ST-DTSC-BS, ST-IST-BS, ST-MACS-BS, ST-MCTC-BS, ST-CSCI-BA, ST-IST-BA, ST-CSCI-MINOR, ST-IST-MINOR, ST-DSCA-MINOR, ST-CSDF-CERTIF, ST-DSCA-CERT, ST-FPRG-CERTIF, ST-MAPD-CERTIF, ST-CSCI-B*, ST-CSCI-MINOR, ST-CYBR-B*, ST-IST-B*, ST-IST-MINOR, ST-DTSC-BS, ST-DSCA-*, ST-CSDF-CERTIF, ST-FPRG-CERTIF, ST-MAPD-CERTIF"
+}
+
+
 function waitForElm(selector) {
   return new Promise(resolve => {
     if (document.querySelector(selector)) {
@@ -59,7 +68,9 @@ function insert_predef_search_select(options) {
   })
 }
 
-function load_and_create_predef_serch(predef_json_url) {
+insert_predef_search_select(predef_searches)
+
+/*function load_and_create_predef_serch(predef_json_url) {
   fetch(chrome.runtime.getURL(predef_json_url))
     .then(response => response.json())
     .then(data => insert_predef_search_select(data))
@@ -68,3 +79,4 @@ function load_and_create_predef_serch(predef_json_url) {
 }
 
 load_and_create_predef_serch("predefined_searches.json")
+*/
